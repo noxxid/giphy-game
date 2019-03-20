@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Giphy search</title>
+    <style type="text/css">
+        button,
+        div,
+        form,
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1> Let's Get Giphy wid it! </h1>
+
+        <div id="buttons-view"></div>
+
+        <form id="giphy-form">
+            <label for="giphy-input">Search Here:</label>
+            <input type="text" id="giphy-input"><br>
+
+            <input id="add-gif" type="submit" value="Search Here:">
+        </form>
+
+        <div id="gifs-go-here"></div>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+
+
+            var giphys = ["Green Street Hooligans", "American Psycho", "Dexter", "P.S I love you", "How to Train Your Dragon"];
+
+
+            function alertMovieName() {
+                var giphy = $(this).attr("data-name");
+                const apiKey = "rPfTy3QFvrH68GYvizeGPv2uVqmES34P";
+                var xhr = `https://api.giphy.com/v1/gifs/search?q=${giphy}&api_key=${apiKey}&limit=10`;
+
+
+                $.ajax({
+                    url: xhr,
+                    method: "GET",
+                }).then(function (response) {
+                    console.log(xhr);
+                    $("#gifs-go-here").empty();
+                    // $("#buttons-view").append((response));
+                    // var results = response.data;
+                    for (var i = 0; i < response.data.length; i++) {
+                        var giphyDiv = $("<div>");
+                        var stillGifURL = response.data[i].images.fixed_height_still.url;
+                        var gifURL = response.data[i].images.fixed_height.url;
+                        var image = $("<img>").attr("src", stillGifURL);
+                        giphyDiv.append(image);
+                        var gifRating = response.data[i].rating;
+                        var rating = $("<p>").text("Rating: " + gifRating);
+                        giphyDiv.append(rating);
+
+                        $("#gifs-go-here").prepend(giphyDiv);
+                    }
+                })
+            }
+
+
+            function renderButtons() {
+                $("#buttons-view").empty();
+                for (var i = 0; i < giphys.length; i++) {
+                    var a = $("<button>");
+                    a.addClass("giphy");
+                    a.attr("data-name", giphys[i]);
+                    a.text(giphys[i]);
+                    $("#buttons-view").append(a);
+                }
+            }
+
+            $("#add-giphy").on("click", function (event) {
+                event.preventDefault();
+
+                var movie = $("#giphy-input").val().trim();
+
+                giphys.push(movie);
+                console.log(giphys);
+
+                renderButtons();
+            })
+
+            $(document).on("click", ".giphy", alertMovieName);
+
+            renderButtons();
+            // $("button").on("click", function () {
+            //     function postGifs() {
+
+            //         var results = response.data;
+            //         for (results[i] = 0; i < response.data.length; i++) {
+            //             var giphyDiv = $("<div>");
+            //             var gifURL = response.data[i].images.fixed_height.url;
+            //             var image = $("<img>").attr("src", gifURL);
+            //             giphyDiv.append(image);
+            //             var gifRating = response.data[i].rating;
+            //             var rating = $("<p>").text("Rating: " + gifRating);
+            //             giphyDiv.append(rating);
+            //             // $("#buttons-view").append(giphyDiv);
+
+            //             $("#gifs-go-here").prepend(giphyDiv);
+            //         }
+            //     }
+
+            // })
+        </script>
+    </div>
+</body>
+
+</html>
