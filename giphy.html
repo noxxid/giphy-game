@@ -18,31 +18,35 @@
 
 <body>
     <div class="container">
+        <!-- this line is my header -->
         <h1> Let's Get Giphy wid it! </h1>
-
+<!-- buttons-view provides a space for my buttons to auto populate when added -->
         <div id="buttons-view"></div>
-
+<!-- this is my search box with input in the form of text  -->
         <form id="giphy-form">
             <label for="giphy-input">Search Here:</label>
             <input type="text" id="giphy-input"><br>
 
             <input id="add-gif" type="submit" value="Search Here:">
         </form>
-
+<!-- div where gifs will be added in -->
         <div id="gifs-go-here"></div>
 
-
+<!-- start of the script tag for my jquery -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script type="text/javascript">
+        // renderButtons will render my giphys, my search and my buttons-view
             $(function () {
                 renderButtons(giphys, "searchButton", "#buttons-view");
             })
 
-
+                // first initial set of gifs to add as buttons
             var giphys = ["Green Street Hooligans", "American Psycho", "Dexter", "P.S I love you", "How to Train Your Dragon"];
-
+            // using the giphysArray, giphy, and buttonsView start empty and the using the for loop go through each one and populate it
             function renderButtons(giphysArray, giphy, buttonsView) {
+               
                 $("#buttons-view").empty();
+            
                 for (var i = 0; i < giphys.length; i++) {
                     var a = $("<button>");
                     a.addClass("giphy");
@@ -52,7 +56,7 @@
                 }
             }
 
-
+            // whenever the gif button is clicked it initializes this function usign the api information i provide
             // function alertMovieName() {
             $(document).on("click", ".giphy", function () {
                 console.log('im clicked');
@@ -61,15 +65,15 @@
                 var xhr = `https://api.giphy.com/v1/gifs/search?q=${giphy}&api_key=${apiKey}&limit=10`;
 
 
-
+                // beginning of my ajax call, calling on the api and using the response from the api to gather information
                 $.ajax({
                     url: xhr,
                     method: "GET",
                 }).then(function (response) {
                     console.log(xhr);
+                    // empties the div gifs-go-here so news ones can be added
                     $("#gifs-go-here").empty();
-                    // $("#buttons-view").append((response));
-                    // var results = response.data;
+                    // runs through my for loop to gether information needed to finish the code
                     for (var i = 0; i < response.data.length; i++) {
                         var giphyDiv = $("<div class='search-item'>");
                         var stillGifURL = response.data[i].images.fixed_height_still.url;
@@ -79,11 +83,13 @@
                         var gifRating = response.data[i].rating;
                         var rating = $("<p>").text("Rating: " + gifRating);
                         giphyDiv.append(rating);
+                        // add attributes to my image to access later.
                         image.attr("src", stillGifURL);
                         image.attr('data-still', stillGifURL);
                         image.attr('data-animated', gifURL);
                         image.attr('data-state', 'stillGifURL');
                         image.addClass('searchImage');
+                        // append my image and rating for each gif into the giphy div, which is then appended to my html gifs-go-here
                         giphyDiv.append(rating);
                         giphyDiv.append(image);
 
@@ -92,21 +98,24 @@
                 })
             })
 
-            // $(document).on("click", ".searchImage", function () {
-            //     console.log('im clicked');
-            //     var state = $(this).data("state");
-            //     console.log(state);
-            //     if (state === "stillGifURL") {
-            //         $(this).attr('src', $(this).data(gifURL));
-            //         $(this).attr('data-state', 'gifURL');
-            //     } else {
-            //         $(this).attr('src', $(this).data('stillGifURL'));
-            //         $(this).attr('data-state', 'stillGifURL');
-            //     }
-            // })
+            $(document).on("click", ".searchImage", function () {
+                console.log('im clicked');
+                var state = $(this).data("state");
+                console.log(state);
+                if (state === "stillGifURL") {
+                    $(this).attr('src', $(this).data(gifURL));
+                    console.log(gifURL);
+                    $(this).attr('data-state', 'gifURL');
+                } else {
+                    $(this).attr('src', $(this).data('stillGifURL'));
+                    $(this).attr('data-state', 'stillGifURL');
+                }
+            })
 
-
-            $("#addSearch").on("click", function () {
+                // addSearch once clicked takes the input in my search box and add its to the giphys array
+                // might need to be #giphy-input or add-gif and not addSearch
+            $("#add-gif").on("click", function () {
+                event.preventDefault();
                 var newSearch = $('input').eq(0).val();
                 giphys.push(newSearch);
                 renderButtons(giphys, "add-gif", "#buttons-view");
